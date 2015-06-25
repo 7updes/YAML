@@ -45,31 +45,26 @@ public class App {
     public static int[] parser(File file) throws IOException {
 
         BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        List<String> list = new ArrayList<String>();
+        List<Integer> list = new ArrayList<Integer>();
         String tmp;
         while((tmp = bufferedReader.readLine()) != null){
-            list.add(tmp);
+            //add second part of strings to list, only integer
+            try {
+                list.add(Integer.valueOf(tmp.split(" ")[1]));
+            }catch (NumberFormatException e){}
+
         }
-        //yaml file in array  [- 11, - 123, - 51]
-        String[] ymlArray = list.toArray(new String[list.size()]);
-        String[] render = new String[ymlArray.length-1];
-        //delete "- " from each one element, 1 element ignored (--- !int[])
-        for (int i = 1; i < ymlArray.length; i++) {
-            String[] strings = ymlArray[i].split(" ");
-            render[i-1] = strings[1];
-        }
-        //to int array
-        int[] array = new int[render.length];
-        for (int i = 0; i < render.length; i++) {
-            array[i] = Integer.valueOf(render[i]);
+        int[] array = new int[list.size()];
+        for (int i = 0; i < array.length; i++) {
+                array[i] = Integer.valueOf(list.get(i));
         }
         return array;
     }
 
     public static int searchNumberWithoutPair(int[] array){
         int result = -1;
-        one:for (int i = 0; i < array.length; i++) {
-            two:for (int j = 0; j < array.length; j++) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length; j++) {
                 //dont check itself
                 if(i == j){
                     continue;
@@ -77,11 +72,14 @@ public class App {
                     result = array[i];
                     if(j==array.length-1){
                         //if found and j is the last one element - stop iterations
-                        break one;
+                        return result;
                     }
-                //if found same element
-                }else break two;
+                    //if found same element
+                }else break;
             }
+        }
+        if(result < 0){
+            System.out.println("No number without pair");
         }
         return result;
     }
